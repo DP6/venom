@@ -185,10 +185,82 @@ function typeOf(object) {
 	return Object.prototype.toString.call(object).slice(8, -1);
 }
 
+// Event listener with polify
+function addListener(obj, evt, ofnc) {
+	var fnc = function (event) {
+		if (!event || !event.target) {
+			event = window.event;
+			event.target = event.srcElement;
+		}
+		return ofnc.call(obj, event);
+	};
+	// W3C model
+	if (obj.addEventListener) {
+		obj.addEventListener(evt, fnc);
+		return true;
+	}
+	// M$ft model
+	else if (obj.attachEvent) {
+		return obj.attachEvent('on' + evt, fnc);
+	}
+	// Browser doesn't support W3C or M$ft model. Time to go old school
+	else {
+		evt = 'on' + evt;
+		if (typeof obj[evt] === 'function') {
+			// Object already has a function on traditional
+			// Let's wrap it with our own function inside another function
+			fnc = (function (f1, f2) {
+				return function () {
+					f1.apply(this, arguments);
+					f2.apply(this, arguments);
+				};
+			}(obj[evt], fnc));
+		}
+		obj[evt] = fnc;
+		return true;
+	}
+}
+
+function getParamURL() {
+	// this fn return params from URL
+	var query_string = {};
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split("=");
+		if (typeof query_string[pair[0]] === "undefined") {
+			query_string[pair[0]] = pair[1];
+		} else if (typeof query_string[pair[0]] === "string") {
+			var arr = [query_string[pair[0]], pair[1]];
+			query_string[pair[0]] = arr;
+		} else {
+			query_string[pair[0]].push(pair[1]);
+		}
+	}
+
+	return query_string;
+}
+
+function domReady(callback) {
+	var scp = this;
+	function cb() {
+		if (cb.done) return;
+		cb.done = true;
+		callback.apply(scp, arguments);
+	}
+	if (/^(interactive|complete)/.test(document.readyState)) return cb();
+	util.addListener(document, 'DOMContentLoaded', cb);
+	util.addListener(window, 'load', cb);
+}
+
+
 var util = {
 	ErrorBuilder: ErrorBuilder,
 	forEach: forEach,
-	typeOf: typeOf
+	typeOf: typeOf,
+	getParamURL: getParamURL,
+	addListener: addListener,
+	domReady: domReady
 };
 
 // ====================
