@@ -3,11 +3,16 @@
 
 	function trackYoutube(util, opt_config) {
 		opt_config = opt_config || {};
+
+		if (opt_config.percentages && util.typeOf(opt_config.percentages) !== 'Array')
+			throw util.errorBuilder('venom:plugin[trackYoutube]', '"percentages" is not a function');
+		if (opt_config.category && typeof opt_config.category !== 'string')
+			throw util.errorBuilder('venom:plugin[trackYoutube]', '"category" is not a string');
+
 		/**
 		 * Default values to function.
 		 */
-		var self = this
-		this.tracker = tracker;
+		var self = this;
 
 		/**
 		 * Array of percentage to fire events.
@@ -26,17 +31,17 @@
 				_ytPoolMaps[hash].timeTriggers.length <= 0) {
 				return false;
 			}
-			var p = target['getCurrentTime']() / target['getDuration']() * 100;
+			var p = target.getCurrentTime() / target.getDuration() * 100;
 			if (p >= _ytPoolMaps[hash].timeTriggers[0]) {
 				var action = _ytPoolMaps[hash].timeTriggers.shift();
 				// Event
-				ga('send', 'event', _ytOpts['category'], action + '%', target['getVideoUrl']());
+				ga('send', 'event', _ytOpts.category, action + '%', target.getVideoUrl());
 			}
 			_ytPoolMaps[hash].timer = setTimeout(_ytPool, 1000, target, hash);
 		}
 
 		function _ytStopPool(target) {
-			var h = target['getVideoUrl']();
+			var h = target.getVideoUrl();
 			if (_ytPoolMaps[h] && _ytPoolMaps[h].timer) {
 				_ytPool(target, h); // Pool one last time before clearing it.
 				clearTimeout(_ytPoolMaps[h].timer);
@@ -45,7 +50,7 @@
 
 		function _ytStartPool(target) {
 			if (_ytTimeTriggers && _ytTimeTriggers.length) {
-				var h = target['getVideoUrl']();
+				var h = target.getVideoUrl();
 				if (_ytPoolMaps[h]) {
 					_ytStopPool(target);
 				} else {
@@ -66,22 +71,22 @@
 		 */
 		function _ytStateChange(event) {
 			var action = '';
-			switch (event['data']) {
+			switch (event.data) {
 			case 0:
 				action = 'finish';
-				_ytStopPool(event['target']);
+				_ytStopPool(event.target);
 				break;
 			case 1:
 				action = 'play';
-				_ytStartPool(event['target']);
+				_ytStartPool(event.target);
 				break;
 			case 2:
 				action = 'pause';
-				_ytStopPool(event['target']);
+				_ytStopPool(event.target);
 				break;
 			}
 			if (action) {
-				ga('send', 'event', _ytOpts['category'], action, event['target']['getVideoUrl']());
+				ga('send', 'event', _ytOpts.category, action, event.target.getVideoUrl());
 			}
 		}
 
@@ -91,7 +96,7 @@
 		 * @param {Object} event the event passed by the YT api.
 		 */
 		function _ytError(event) {
-			ga('send', 'event', _ytOpts['category'], 'error (' + event['data'] + ')', event['target']['getVideoUrl']());
+			ga('send', 'event', _ytOpts.category, 'error (' + event.data + ')', event.target.getVideoUrl());
 		}
 
 		/**
@@ -135,8 +140,8 @@
 		 * @param {(object)} opts.
 		 */
 		function _trackYoutube(opts) {
-			var force = opts['force'];
-			var opt_timeTriggers = opts['percentages'];
+			var force = opts.force;
+			var opt_timeTriggers = opts.percentages;
 			if (force) {
 				try {
 					_ytMigrateObjectEmbed();
@@ -173,10 +178,10 @@
 					_ytTimeTriggers = opt_timeTriggers;
 				}
 				// this function will be called when the youtube api loads
-				window['onYouTubePlayerAPIReady'] = function () {
+				window.onYouTubePlayerAPIReady = function () {
 					var p;
 					for (var i = 0; i < youtube_videos.length; i++) {
-						p = new window['YT']['Player'](youtube_videos[i]);
+						p = new window.YT.Player(youtube_videos[i]);
 						p.addEventListener('onStateChange', _ytStateChange);
 						p.addEventListener('onError', _ytError);
 					}
@@ -204,22 +209,22 @@
 					'force': !!args[0]
 				};
 				if (args[1] && args[1].length) {
-					opts['percentages'] = args[1];
+					opts.percentages = args[1];
 				}
 			}
 
-			opt_config['force'] = opt_config['force'] || false;
-			opt_config['category'] = opt_config['category'] || 'YouTube Video';
-			opt_config['percentages'] = opt_config['percentages'] || [];
+			opt_config.force = opt_config.force || false;
+			opt_config.category = opt_config.category || 'YouTube Video';
+			opt_config.percentages = opt_config.percentages || [];
 
 			_ytOpts = opt_config;
 			util.domReady(function () {
 				_trackYoutube.call(self, opt_config);
 			});
 			return false;
-		};
+		}
 
-		_gaTrackYoutube(opt_config)
+		_gaTrackYoutube(opt_config);
 	}
 
 	if (ga)
