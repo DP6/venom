@@ -1,33 +1,33 @@
 // Plugin copy cookies
-var VenomCopyCookie = function(tracker,config){
-
-	this.tracker = tracker;
-	this.listDomain = config.listDomain || [document.location.hostname];
-	this.params = config.params || [util.getParamURL()];
+function VenomCopyCookie(ga, util, config) {
 	var elementLinks;
+	if (!config.listDomain)
+		throw util.errorBuilder('plugin:VenomCopyCookie', '"listDomain" was not supplied');
 
-	var decorateMe = function(event) {
+	this.listDomain = config.listDomain;
+	this.params = config.params || [util.getParamURL()];
+
+	function decorateMe(event) {
 		event = event || window.event;
 		var target = event.target || event.srcElement;
 
-		if (target && target.href) {  
+		if (target && target.href) {
 			ga('linker:decorate', target);
 		}
-	}
-
-	elementLinks = document.getElementsByTagName('a')
-	for (var i = elementLinks.length - 1; i >= 0; i--) {
-		util.addListener(elementLinks[i],'mousedown',function(){
-			decorateMe(event);
-		});
 	};
 
-	VenomCopyCookie.prototype.set = function(){
+	elementLinks = document.getElementsByTagName('a');
+	for (var i = elementLinks.length - 1; i >= 0; i--) {
+		util.addListener(elementLinks[i], 'mousedown', function () {
+			decorateMe(event);
+		});
+	}
+
+	VenomCopyCookie.prototype.set = function () {
 		// Load plugin to listener all links on the page and automatically fire cookie GA.
 		ga('require', 'linker');
 		ga('linker:autoLink', this.listDomain);
-	}
-
+	};
 }
 
 
