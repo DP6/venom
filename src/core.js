@@ -17,8 +17,17 @@ function Venom(tracker, opt_config) {
 	this.events = {};
 	this.pluginSampleRate = opt_config.pluginSampleRate || false;
 	this.defaultBehavior = opt_config.defaultBehavior || false;
-	this.errorHandler = typeof opt_config.errorHandler === 'function' ? opt_config.errorHandler : false;
 	this.debug = opt_config.debug || false;
+	if (opt_config.errorHandler === 'function') {
+		this.errorHandler = opt_config.errorHandler;
+	} else {
+		this.errorHandler = function (error) {
+			if (window.console && typeof console.error = 'function')
+				console.error(error);
+			ga('send', 'event', 'Venom Exceptions', error.name, error.message);
+		};
+	}
+
 }
 
 // ====================
@@ -36,7 +45,7 @@ function provide(pluginName, plugin, opt_override) {
 	if (typeof plugin !== 'function')
 		throw util.ErrorBuilder('venom:provide', '"plugin" is not a function');
 	if (typeof this.plugins[pluginName] !== 'undefined' && opt_override !== true)
-		throw ErrorBuilder('venom:provide', 'Plugin "' + pluginName +'" is already defined');
+		throw ErrorBuilder('venom:provide', 'Plugin "' + pluginName + '" is already defined');
 
 	this.plugins[pluginName] = plugin;
 
@@ -142,10 +151,10 @@ function trigger(eventName, opt_data) {
 // Description: 
 // ====================o3s
 
-ga(function(tracker) {
+ga(function (tracker) {
 	var task = tracker.get('sendHitTask');
 
-	tracker.set('sendHitTask', function(data) {
+	tracker.set('sendHitTask', function (data) {
 		var hitType = data.get('hitType');
 
 		if (hitType === 'pageview') {
@@ -281,6 +290,7 @@ function getParamURL() {
 
 function domReady(callback) {
 	var scp = this;
+
 	function cb() {
 		if (cb.done) return;
 		cb.done = true;
