@@ -12,7 +12,8 @@ var ga = window[window.GoogleAnalyticsObject || 'ga'];
 
 function Venom(tracker, opt_config) {
 	var self = this;
-	typeof opt_config === 'object' || (opt_config = {});
+	if (typeof opt_config !== 'object')
+		opt_config = {};
 	self.plugins = {};
 	self.tempPlugins = {};
 	self.events = {};
@@ -23,13 +24,13 @@ function Venom(tracker, opt_config) {
 		self.errorHandler = opt_config.errorHandler;
 	} else {
 		self.errorHandler = function (error) {
-			if (window.console && typeof console.error = 'function')
+			if (window.console && typeof console.error === 'function')
 				console.error(error);
 			ga('send', 'event', 'Venom Exceptions', error.name, error.message);
 		};
 	}
 
-	self.util = {
+	var util = self.util = {
 		errorBuilder: safeFunction(errorBuilder),
 		safeFunction: safeFunction,
 		getParamURL: safeFunction(getParamURL),
@@ -164,9 +165,9 @@ function Venom(tracker, opt_config) {
 			try {
 				fn.apply(this, arguments);
 			} catch (e) {
-				self.errorHandler(e);
+				util.errorHandler(e);
 			}
-		}
+		};
 	}
 }
 
@@ -177,24 +178,24 @@ function Venom(tracker, opt_config) {
 
 function provide(pluginName, plugin, opt_override) {
 	if (!pluginName)
-		throw util.errorBuilder('venom:provide', '"pluginName" was not supplied');
+		throw this.util.errorBuilder('venom:provide', '"pluginName" was not supplied');
 	if (!plugin)
-		throw util.errorBuilder('venom:provide', '"plugin" was not supplied');
+		throw this.util.errorBuilder('venom:provide', '"plugin" was not supplied');
 	if (typeof pluginName !== 'string')
-		throw util.errorBuilder('venom:provide', '"pluginName" is not a string');
+		throw this.util.errorBuilder('venom:provide', '"pluginName" is not a string');
 	if (typeof plugin !== 'function')
-		throw util.errorBuilder('venom:provide', '"plugin" is not a function');
+		throw this.util.errorBuilder('venom:provide', '"plugin" is not a function');
 	if (typeof this.plugins[pluginName] !== 'undefined' && opt_override !== true)
-		throw errorBuilder('venom:provide', 'Plugin "' + pluginName + '" is already defined');
+		throw this.util.errorBuilder('venom:provide', 'Plugin "' + pluginName + '" is already defined');
 
 	this.plugins[pluginName] = plugin;
 
 	if (this.tempPlugins.hasOwnProperty(pluginName)) {
-		util.forEach(this.tempPlugins[pluginName], function (el) {
+		this.util.forEach(this.tempPlugins[pluginName], function (config) {
 			try {
-				plugin(util, config);
+				plugin.call(this, this.util, config);
 			} catch (e) {
-				throw util.errorBuilder('venom:provide', '"plugin[' + pluginName + ']": ' + e);
+				throw this.util.errorBuilder('venom:provide', '"plugin[' + pluginName + ']": ' + e);
 			}
 		});
 		this.tempPlugins[pluginName] = [];
@@ -203,14 +204,15 @@ function provide(pluginName, plugin, opt_override) {
 
 function require(pluginName, opt_config) {
 	if (!pluginName)
-		throw util.errorBuilder('venom:require', '"pluginName" was not supplied');
+		throw this.util.errorBuilder('venom:require', '"pluginName" was not supplied');
 	if (typeof pluginName !== 'string')
-		throw util.errorBuilder('venom:require', '"pluginName" is not a string');
+		throw this.util.errorBuilder('venom:require', '"pluginName" is not a string');
 
 	if (typeof this.plugins[pluginName] === 'function') {
-		this.plugins[pluginName](util, config);
+		this.plugins[pluginName](this.util, opt_config);
 	} else {
-		this.tempPlugins.hasOwnProperty(pluginName) || (this.tempPlugins[pluginName] = []);
+		if (this.tempPlugins.hasOwnProperty(pluginName) === false)
+			this.tempPlugins[pluginName] = [];
 		this.tempPlugins[pluginName].push(opt_config || {});
 	}
 }
@@ -221,31 +223,32 @@ function require(pluginName, opt_config) {
 // ====================
 function on(eventName, listener, opt_scope) {
 	if (!eventName)
-		throw util.errorBuilder('venom:on', '"eventName" was not supplied');
+		throw this.util.errorBuilder('venom:on', '"eventName" was not supplied');
 	if (!listener)
-		throw util.errorBuilder('venom:on', '"listener" was not supplied');
+		throw this.util.errorBuilder('venom:on', '"listener" was not supplied');
 	if (typeof eventName !== 'string')
-		throw util.errorBuilder('venom:on', '"eventName" is not a string');
+		throw this.util.errorBuilder('venom:on', '"eventName" is not a string');
 	if (typeof listener !== 'function')
-		throw util.errorBuilder('venom:on', '"listener" is not a function');
+		throw this.util.errorBuilder('venom:on', '"listener" is not a function');
 
 	if (opt_scope) {
-		if (typeof opt_score !== 'string') {
-			throw util.errorBuilder('venom:on', '"opt_scope" is not a string');
+		if (typeof opt_scope !== 'string') {
+			throw this.util.errorBuilder('venom:on', '"opt_scope" is not a string');
 		} else {
 			eventName = opt_scope + '.' + eventName;
 		}
 	}
 
-	this.events.hasOwnProperty(eventName) || (this.events[eventName] = []);
+	if (this.events.hasOwnProperty(eventName) === false)
+		this.events[eventName] = [];
 	this.events[eventName].push(listener);
 }
 
 function off(eventName, removeAll) {
 	if (!eventName)
-		throw util.errorBuilder('venom:off', '"eventName" was not supplied');
+		throw this.util.errorBuilder('venom:off', '"eventName" was not supplied');
 	if (typeof eventName !== 'string')
-		throw util.errorBuilder('venom:off', '"eventName" is not a string');
+		throw this.util.errorBuilder('venom:off', '"eventName" is not a string');
 
 	if (this.events[eventName]) {
 		if (removeAll)
@@ -258,27 +261,27 @@ function off(eventName, removeAll) {
 function trigger(eventName, opt_data) {
 	var self = this;
 	if (!eventName)
-		throw util.errorBuilder('venom:trigger', '"eventName" was not supplied');
+		throw this.util.errorBuilder('venom:trigger', '"eventName" was not supplied');
 	if (typeof eventName !== 'string')
-		throw util.errorBuilder('venom:trigger', '"eventName" is not a string');
+		throw this.util.errorBuilder('venom:trigger', '"eventName" is not a string');
 
 	if (eventName.indexOf('.') > 0) {
-		util.forEach(self.events[eventName], function (listener, key) {
+		this.util.forEach(self.events[eventName], function (listener, key) {
 			try {
-				listener.call(self, util, opt_data);
+				listener.call(self, this.util, opt_data);
 			} catch (e) {
-				throw util.errorBuilder('venom:util.triggerScoped', '"callback[' + key + ']": ' + e);
+				throw this.util.errorBuilder('venom:util.triggerScoped', '"callback[' + key + ']": ' + e);
 			}
 		});
 	} else {
-		util.forEach(self.events, function (listeners, evName) {
+		this.util.forEach(self.events, function (listeners, evName) {
 			var unescopedName = evName.indexOf('.') >= 0 ? evName.split('.').reverse()[0] : evName;
 			if (unescopedName === eventName) {
-				util.forEach(listeners, function (listener, key) {
+				this.util.forEach(listeners, function (listener, key) {
 					try {
-						listener.call(self, util, opt_data);
+						listener.call(self, this.util, opt_data);
 					} catch (e) {
-						throw util.errorBuilder('venom:util.triggerUnescoped', '"callback[' + key + ']": ' + e);
+						throw this.util.errorBuilder('venom:util.triggerUnescoped', '"callback[' + key + ']": ' + e);
 					}
 				});
 			}
@@ -291,7 +294,7 @@ function trigger(eventName, opt_data) {
 	// Description: 
 	// ====================
 
-	ga(safeFunction(function (tracker) {
+	ga(this.util.safeFunction(function (tracker) {
 		var task = tracker.get('sendHitTask');
 
 		tracker.set('sendHitTask', function (data) {
@@ -341,14 +344,24 @@ function get(attr, callback) {
 	callback.call(this, this[attr]);
 }
 
-Venom.prototype = {
-	provide: provide,
-	require: require,
-	trigger: trigger,
-	off: off,
-	on: on,
-	log: log,
-	get: get
-};
+function safeFunction(fn) {
+	var self = this;
+	return function () {
+		try {
+			fn.apply(this, arguments);
+		} catch (e) {
+			self.util.errorHandler(e);
+		}
+	};
+}
 
+Venom.prototype = {
+	provide: safeFunction(provide),
+	require: safeFunction(require),
+	trigger: safeFunction(trigger),
+	off: safeFunction(off),
+	on: safeFunction(on),
+	log: safeFunction(log),
+	get: safeFunction(get)
+};
 providePlugin('venom', Venom);
