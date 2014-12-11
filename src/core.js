@@ -43,7 +43,7 @@ function provide(pluginName, plugin, opt_override) {
 	if (this.tempPlugins.hasOwnProperty(pluginName)) {
 		util.forEach(this.tempPlugins[pluginName], function (el) {
 			try {
-				plugin(ga, util, el);
+				plugin(util, config);
 			} catch (e) {
 				throw util.ErrorBuilder('venom:provide', '"plugin[' + pluginName + ']": ' + e);
 			}
@@ -59,7 +59,7 @@ function require(pluginName, opt_config) {
 		throw util.ErrorBuilder('venom:require', '"pluginName" is not a string');
 
 	if (typeof this.plugins[pluginName] === 'function') {
-		this.plugins[pluginName](ga, util, opt_config);
+		this.plugins[pluginName](util, config);
 	} else {
 		this.tempPlugins.hasOwnProperty(pluginName) || (this.tempPlugins[pluginName] = []);
 		this.tempPlugins[pluginName].push(opt_config || {});
