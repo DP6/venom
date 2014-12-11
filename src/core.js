@@ -36,7 +36,7 @@ function provide(pluginName, plugin, opt_override) {
 	if (typeof plugin !== 'function')
 		throw util.ErrorBuilder('venom:provide', '"plugin" is not a function');
 	if (typeof this.plugins[pluginName] !== 'undefined' && opt_override !== true)
-		throw ErrorBuilder('venom:provide', 'Plugin is already defined');
+		throw ErrorBuilder('venom:provide', 'Plugin "' + pluginName +'" is already defined');
 
 	this.plugins[pluginName] = plugin;
 
