@@ -8,6 +8,8 @@
 // Name: Constructor
 // Description: Initiates the base for the plugin
 // ====================
+var ga = window[window.GoogleAnalyticsObject || 'ga'];
+
 function Venom(tracker, opt_config) {
 	typeof opt_config === 'object' || (opt_config = {});
 	this.plugins = {};
@@ -23,6 +25,7 @@ function Venom(tracker, opt_config) {
 // Name: Plugin Management System
 // Description: Provides an interface for the creation (provide) and use (require) of plugins
 // ====================
+
 function provide(pluginName, plugin, opt_override) {
 	if (!pluginName)
 		throw util.ErrorBuilder('venom:provide', '"pluginName" was not supplied');
@@ -40,7 +43,7 @@ function provide(pluginName, plugin, opt_override) {
 	if (this.tempPlugins.hasOwnProperty(pluginName)) {
 		util.forEach(this.tempPlugins[pluginName], function (el) {
 			try {
-				plugin(util, el);
+				plugin(ga, util, el);
 			} catch (e) {
 				throw util.ErrorBuilder('venom:provide', '"plugin[' + pluginName + ']": ' + e);
 			}
@@ -56,7 +59,7 @@ function require(pluginName, opt_config) {
 		throw util.ErrorBuilder('venom:require', '"pluginName" is not a string');
 
 	if (typeof this.plugins[pluginName] === 'function') {
-		this.plugins[pluginName](util, opt_config);
+		this.plugins[pluginName](ga, util, opt_config);
 	} else {
 		this.tempPlugins.hasOwnProperty(pluginName) || (this.tempPlugins[pluginName] = []);
 		this.tempPlugins[pluginName].push(opt_config || {});
@@ -76,7 +79,7 @@ function on(eventName, listener, opt_scope) {
 		throw util.ErrorBuilder('venom:on', '"eventName" is not a string');
 	if (typeof listener !== 'function')
 		throw util.ErrorBuilder('venom:on', '"listener" is not a function');
-	
+
 	if (opt_scope) {
 		if (typeof opt_score !== 'string') {
 			throw util.ErrorBuilder('venom:on', '"opt_scope" is not a string');
@@ -193,7 +196,6 @@ var util = {
 // Description: Provide as an Universal Analytics plugin
 // ====================
 function providePlugin(pluginName, pluginConstructor) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
 	if (ga) ga('provide', pluginName, pluginConstructor);
 }
 
