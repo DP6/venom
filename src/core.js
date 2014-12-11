@@ -160,7 +160,7 @@ function forEach(obj, callback) {
 	if (typeof callback !== 'function')
 		throw util.ErrorBuilder('venom:util.forEach', '"callback" is not a function');
 
-	if (util.toString(obj) === 'Array') {
+	if (obj.length) {
 		for (i = 0, length = obj.length; i < length; i++) {
 			try {
 				callback(obj[i], i);
