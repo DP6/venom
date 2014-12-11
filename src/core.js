@@ -290,8 +290,8 @@ function trigger(eventName, opt_data) {
 
 
 	// ====================
-	// Name: 
-	// Description: 
+	// Name: GA Hit Hooks
+	// Description: Triggers events for GA's Pageview, Event and Timing Hits
 	// ====================
 
 	ga(this.util.safeFunction(function (tracker) {
@@ -332,10 +332,6 @@ function trigger(eventName, opt_data) {
 // Name: Provide
 // Description: Provide as an Universal Analytics plugin
 // ====================
-function providePlugin(pluginName, pluginConstructor) {
-	if (ga) ga('provide', pluginName, pluginConstructor);
-}
-
 function log() {
 	console.log(this);
 }
@@ -364,4 +360,5 @@ Venom.prototype = {
 	log: safeFunction(log),
 	get: safeFunction(get)
 };
-providePlugin('venom', Venom);
+
+if (ga) ga('provide', 'venom', Venom);
