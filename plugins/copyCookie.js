@@ -13,7 +13,7 @@
 			ga('linker:autoLink', config.domainList);
 		} else {
 			util.forEach(document.getElementsByTagName('a'), function (el) {
-				util.addListener(el, 'mousedown', function () {
+				util.addListener(el, 'mousedown', function (event) {
 					if (verifyDomain(util, config.domainList, this.hostname)) {
 						event = event || window.event;
 						var target = event.target || event.srcElement;
