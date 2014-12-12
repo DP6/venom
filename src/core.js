@@ -33,11 +33,12 @@ function Venom(tracker, opt_config) {
 	var util = self.util = {
 		errorBuilder: safeFunction(errorBuilder),
 		safeFunction: safeFunction,
-		getParamURL: safeFunction(getParamURL),
-		addListener: safeFunction(addListener),
-		domReady: safeFunction(domReady),
-		forEach: safeFunction(forEach),
-		typeOf: safeFunction(typeOf)
+		getParamURL:  safeFunction(getParamURL),
+		addListener:  safeFunction(addListener),
+		domReady:     safeFunction(domReady),
+		forEach:      safeFunction(forEach),
+		typeOf:       safeFunction(typeOf),
+		bind:         safeFunction(bind)
 	};
 
 	// ====================
@@ -49,6 +50,33 @@ function Venom(tracker, opt_config) {
 			name: errorName,
 			message: errorMessage
 		};
+	}
+
+	function bind(fn, context) {
+		var args, proxy, tmp, guid = 1;
+
+		if (typeof context === "string") {
+			tmp = fn[context];
+			context = fn;
+			fn = tmp;
+		}
+
+		// Quick check to determine if target is callable, in the spec
+		// this throws a TypeError, but we will just return undefined.
+		if (typeof fn !== 'function') {
+			return undefined;
+		}
+
+		// Simulated bind
+		args = Array.prototype.slice.call(arguments, 2);
+		proxy = function () {
+			return fn.apply(context || this, args.concat(Array.prototype.slice.call(arguments)));
+		};
+
+		// Set the guid of unique handler to the same of original handler, so it can be removed
+		proxy.guid = fn.guid = fn.guid || guid++;
+
+		return proxy;
 	}
 
 	function forEach(obj, callback) {
