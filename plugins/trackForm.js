@@ -1,12 +1,8 @@
-(function (window) {
+(function(window) {
 	var ga = window[window.GoogleAnalyticsObject || 'ga'];
 
 	function trackForm(util, opt_config) {
 		opt_config = opt_config || {};
-
-		// Form is already tracked
-		if (this.venomFormTracked) return false;
-		this.venomFormTracked = true;
 
 		if (opt_config.handler && typeof opt_config.handler !== 'function')
 			throw util.errorBuilder('venom:plugin[trackForm]', '"handler" is not a function');
@@ -17,34 +13,29 @@
 			opt_config.category = 'Form Tracking';
 
 		if (!opt_config.handler)
-			opt_config.handler = function (info) {
+			opt_config.handler = function(info) {
 				var action = 'form (' + info.formName + ')';
 				var label = info.elementName + ' (' + info.event.type + ')';
 				ga('send', 'event', opt_config.category, action, label);
 			};
+		opt_config.handler = util.safeFunction(opt_config.handler);
 
-		function trackField(event) {
+		var trackField = util.safeFunction(function(event) {
 			event = event || window.event;
-			var element = event.target;
-			var formName = getFormName(element);
-			var elementName = getAttribute(element, 'name') ||
-				getAttribute(element, 'id') ||
-				getAttribute(element, 'type') ||
-				element.nodeName;
-
+			var element = event.target || event.srcElement;
 			try {
 				opt_config.handler({
 					element: element,
-					elementName: elementName,
-					formName: formName,
+					elementName: getAttribute(element, 'name') || getAttribute(element, 'id') || getAttribute(element, 'type') || element.nodeName,
+					formName: getFormName(element) || 'none',
 					event: event
 				});
 			} catch (e) {
 				throw util.errorBuilder('venom:plugin[trackForm]', 'opt_config.handler:' + e);
 			}
-		}
+		});
 
-		function getFormName(element) {
+		var getFormName = util.safeFunction(function(element) {
 			while (element && element.nodeName !== 'HTML') {
 				if (element.nodeName === 'FORM') {
 					return getAttribute(element, 'name') || getAttribute(element, 'id') || 'none';
@@ -52,22 +43,28 @@
 				element = element.parentNode;
 			}
 			return 'none';
-		}
+		});
 
-		function getAttribute(node, attr) {
+		var getAttribute = util.safeFunction(function(node, attr) {
 			return typeof node[attr] === 'string' ? node[attr] : node.getAttribute(attr);
-		}
+		});
 
-		util.domReady(function () {
-			util.forEach(['input', 'select', 'textarea', 'hidden'], function (tagName) {
+		util.domReady(function() {
+			util.forEach(['input', 'select', 'textarea', 'hidden'], function(tagName) {
 				var elements = document.getElementsByTagName(tagName);
-				util.forEach(elements, function (element) {
-					util.addListener(element, 'change', trackField);
+				util.forEach(elements, function(element) {
+					if (!element.venomFormTracked) {
+						element.venomFormTracked = true;
+						util.addListener(element, 'change', trackField);
+					}
 				});
 			});
 
-			util.forEach(document.getElementsByTagName('form'), function (form) {
-				util.addListener(form, 'submit', trackField);
+			util.forEach(document.getElementsByTagName('form'), function(form) {
+				if (!element.venomFormTracked) {
+					element.venomFormTracked = true;
+					util.addListener(form, 'submit', trackField);
+				}
 			});
 		});
 	}
