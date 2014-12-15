@@ -7,9 +7,9 @@
 		if (util.typeOf(config.domainList) !== 'Array')
 			throw util.errorBuilder('plugin:copyCookie', '"domainList" is not an array');
 
+		ga('require', 'linker');
 		if (config.useAutoLinker) {
 			// Load plugin to listener all links on the page and automatically fire cookie GA.
-			ga('require', 'linker');
 			ga('linker:autoLink', config.domainList);
 		} else {
 			util.forEach(document.getElementsByTagName('a'), function (el) {
