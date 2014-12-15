@@ -20,6 +20,9 @@ function Venom(tracker, opt_config) {
 
 	if (typeof opt_config !== 'object')
 		opt_config = {};
+
+	if (opt_config.mirrorTracker)
+		self.mirrorTracker = opt_config.mirrorTracker;
 	
 	if (opt_config.errorHandler === 'function') {
 		self.errorHandler = opt_config.errorHandler;
