@@ -1,11 +1,11 @@
-(function(window) {
+(function (window) {
 	var ga = window[window.GoogleAnalyticsObject || 'ga'];
 
 	function gaHitHook(util, opt_config) {
-		ga(function(tracker) {
+		ga(function (tracker) {
 			var task = tracker.get('sendHitTask');
 
-			tracker.set('sendHitTask', function(data) {
+			tracker.set('sendHitTask', function (data) {
 				var hitType = data.get('hitType');
 
 				if (hitType === 'pageview') {

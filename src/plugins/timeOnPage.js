@@ -1,4 +1,4 @@
-(function(window) {
+(function (window) {
 	var ga = window[window.GoogleAnalyticsObject || 'ga'];
 
 	function timeOnPage(util, opt_config) {
@@ -18,7 +18,7 @@
 			start = new Date().getTime();
 		}
 
-		util.addListener(window, 'unload', function() {
+		util.addListener(window, 'unload', function () {
 			var ms = start ? (new Date().getTime() - start) : performance.now();
 			var range = getRange(ms / 1000, opt_config.timeBucket);
 			ga('send', {

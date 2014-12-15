@@ -24,7 +24,7 @@ function Venom(tracker, opt_config) {
 	if (opt_config.errorHandler === 'function') {
 		self.errorHandler = opt_config.errorHandler;
 	} else {
-		self.errorHandler = function(error) {
+		self.errorHandler = function (error) {
 			if (window.console && typeof console.error === 'function')
 				console.error(error.name + '\n' + error.message);
 			ga('send', 'event', 'Venom Exceptions', error.name, error.message);
@@ -39,14 +39,14 @@ function Venom(tracker, opt_config) {
 // ====================
 var util = {};
 
-util.errorBuilder = function(errorName, errorMessage) {
+util.errorBuilder = function (errorName, errorMessage) {
 	return {
 		name: errorName,
 		message: errorMessage
 	};
 };
 
-util.bind = function(fn, context) {
+util.bind = function (fn, context) {
 	var args, proxy, tmp, guid = 1;
 
 	if (typeof context === "string") {
@@ -63,7 +63,7 @@ util.bind = function(fn, context) {
 
 	// Simulated bind
 	args = Array.prototype.slice.call(arguments, 2);
-	proxy = function() {
+	proxy = function () {
 		return fn.apply(context || this, args.concat(Array.prototype.slice.call(arguments)));
 	};
 
@@ -73,7 +73,7 @@ util.bind = function(fn, context) {
 	return proxy;
 };
 
-util.forEach = function(obj, callback) {
+util.forEach = function (obj, callback) {
 	var self = this;
 	var length;
 	var key;
@@ -99,13 +99,13 @@ util.forEach = function(obj, callback) {
 	}
 };
 
-util.typeOf = function(object) {
+util.typeOf = function (object) {
 	return Object.prototype.toString.call(object).slice(8, -1);
 };
 
 // Event listener with polify
-util.addListener = function(obj, evt, ofnc) {
-	var fnc = function(event) {
+util.addListener = function (obj, evt, ofnc) {
+	var fnc = function (event) {
 		if (!event || !event.target) {
 			event = window.event;
 			event.target = event.srcElement;
@@ -127,8 +127,8 @@ util.addListener = function(obj, evt, ofnc) {
 		if (typeof obj[evt] === 'function') {
 			// Object already has a util.on = function traditional
 			// Let's wrap it with our own util.inside = function another function
-			fnc = (function(f1, f2) {
-				return function() {
+			fnc = (function (f1, f2) {
+				return function () {
 					f1.apply(this, arguments);
 					f2.apply(this, arguments);
 				};
@@ -139,7 +139,7 @@ util.addListener = function(obj, evt, ofnc) {
 	}
 };
 
-util.getParamURL = function() {
+util.getParamURL = function () {
 	// this fn return params from URL
 	var query_string = {};
 	var query = window.location.search.substring(1);
@@ -159,7 +159,7 @@ util.getParamURL = function() {
 	return query_string;
 };
 
-util.domReady = function(callback) {
+util.domReady = function (callback) {
 	function cb() {
 		if (cb.done) return;
 		cb.done = true;
@@ -175,8 +175,8 @@ util.domReady = function(callback) {
 	util.addListener(window, 'load', cb);
 };
 
-util.safeFunction = function(fn) {
-	return function() {
+util.safeFunction = function (fn) {
+	return function () {
 		try {
 			fn.apply(this, arguments);
 		} catch (e) {
@@ -192,7 +192,7 @@ Venom.prototype.safeFunction = util.safeFunction;
 // Name: Plugin Management System
 // Description: Provides an interface for the creation (provide) and use (require) of plugins
 // ====================
-Venom.prototype.provide = util.safeFunction(function(pluginName, plugin, opt_override) {
+Venom.prototype.provide = util.safeFunction(function (pluginName, plugin, opt_override) {
 	var self = this;
 	if (!pluginName)
 		throw self.util.errorBuilder('venom:provide', '"pluginName" was not supplied');
@@ -208,7 +208,7 @@ Venom.prototype.provide = util.safeFunction(function(pluginName, plugin, opt_ove
 	self.plugins[pluginName] = self.safeFunction(plugin);
 
 	if (self.tempPlugins.hasOwnProperty(pluginName)) {
-		self.util.forEach(self.tempPlugins[pluginName], function(config) {
+		self.util.forEach(self.tempPlugins[pluginName], function (config) {
 			try {
 				plugin.call(self, self.util, config);
 			} catch (e) {
@@ -219,7 +219,7 @@ Venom.prototype.provide = util.safeFunction(function(pluginName, plugin, opt_ove
 	}
 });
 
-Venom.prototype.require = util.safeFunction(function(pluginName, opt_config) {
+Venom.prototype.require = util.safeFunction(function (pluginName, opt_config) {
 	var self = this;
 	if (!pluginName)
 		throw self.util.errorBuilder('venom:require', '"pluginName" was not supplied');
@@ -239,7 +239,7 @@ Venom.prototype.require = util.safeFunction(function(pluginName, opt_config) {
 // Name: Event Management System
 // Description: Provides an interface for the creation, removal and firing of listeners
 // ====================
-Venom.prototype.on = util.safeFunction(function(eventName, listener, opt_scope) {
+Venom.prototype.on = util.safeFunction(function (eventName, listener, opt_scope) {
 	var self = this;
 	if (!eventName)
 		throw self.util.errorBuilder('venom:on', '"eventName" was not supplied');
@@ -263,7 +263,7 @@ Venom.prototype.on = util.safeFunction(function(eventName, listener, opt_scope) 
 	self.events[eventName].push(listener);
 });
 
-Venom.prototype.off = util.safeFunction(function(eventName, removeAll) {
+Venom.prototype.off = util.safeFunction(function (eventName, removeAll) {
 	var self = this;
 	if (!eventName)
 		throw self.util.errorBuilder('venom:off', '"eventName" was not supplied');
@@ -278,7 +278,7 @@ Venom.prototype.off = util.safeFunction(function(eventName, removeAll) {
 	}
 });
 
-Venom.prototype.trigger = util.safeFunction(function(eventName, opt_data) {
+Venom.prototype.trigger = util.safeFunction(function (eventName, opt_data) {
 	var self = this;
 	if (!eventName)
 		throw self.util.errorBuilder('venom:trigger', '"eventName" was not supplied');
@@ -286,7 +286,7 @@ Venom.prototype.trigger = util.safeFunction(function(eventName, opt_data) {
 		throw self.util.errorBuilder('venom:trigger', '"eventName" is not a string');
 
 	if (eventName.indexOf('.') > 0) {
-		self.util.forEach(self.events[eventName], function(listener, key) {
+		self.util.forEach(self.events[eventName], function (listener, key) {
 			try {
 				listener.call(self, self.util, opt_data);
 			} catch (e) {
@@ -294,10 +294,10 @@ Venom.prototype.trigger = util.safeFunction(function(eventName, opt_data) {
 			}
 		});
 	} else {
-		self.util.forEach(self.events, function(listeners, evName) {
+		self.util.forEach(self.events, function (listeners, evName) {
 			var unescopedName = evName.indexOf('.') >= 0 ? evName.split('.').reverse()[0] : evName;
 			if (unescopedName === eventName && listeners) {
-				self.util.forEach(listeners, function(listener, key) {
+				self.util.forEach(listeners, function (listener, key) {
 					try {
 						listener.call(self, self.util, opt_data);
 					} catch (e) {
@@ -313,11 +313,11 @@ Venom.prototype.trigger = util.safeFunction(function(eventName, opt_data) {
 // Name: Provide
 // Description: Provide as an Universal Analytics plugin
 // ====================
-Venom.prototype.log = function() {
+Venom.prototype.log = function () {
 	console.log(this);
 };
 
-Venom.prototype.get = util.safeFunction(function(attr, callback) {
+Venom.prototype.get = util.safeFunction(function (attr, callback) {
 	if (!attr)
 		throw util.errorBuilder('venom:get', '"attr" was not supplied');
 	if (!callback)
@@ -331,7 +331,7 @@ Venom.prototype.get = util.safeFunction(function(attr, callback) {
 });
 
 if (!ga) {
-	window.ga = function() {
+	window.ga = function () {
 		window.ga.q.push(arguments);
 	};
 	window.ga.q = [];
