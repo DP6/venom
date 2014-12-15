@@ -3,7 +3,7 @@
 
 	function mirrorTracker(util) {
 		var self = this;
-		var name = self.mirrorTracker || self.tracker.get('name');
+		var name = self.config.mirrorTracker || self.tracker.get('name');
 
 		ga('venom:on', 'gaPageview', function (info) {
 			util.forEach(ga.getAll(), function (tracker) {
