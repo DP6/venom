@@ -30,6 +30,8 @@ function Venom(tracker, opt_config) {
 	self.errorHandler = self.config.errorHandler;
 	self.util.errorHandler = self.config.errorHandler;
 
+	if (self.config.mirrorTracker)
+		ga('venom:exec', 'mirrorTracker');
 	// TODO - other options
 	// self.pluginSampleRate = opt_config.pluginSampleRate || false;
 	// self.defaultBehavior = opt_config.defaultBehavior || false;
