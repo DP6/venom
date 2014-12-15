@@ -1,5 +1,4 @@
-<img src="http://www.officialpsds.com/images/thumbs/Venom-Logo-psd69462.png">
-#Venom     *by [dp6](http://www.dp6.com.br/)*
+#Venom *by [dp6](http://www.dp6.com.br/)*
 
 ## Syntax Indentation
 Use [JsFormat](https://github.com/jdc0589/JsFormat) with the following settings
