@@ -192,7 +192,7 @@ Venom.prototype.safeFunction = util.safeFunction;
 
 // ====================
 // Name: Plugin Management System
-// Description: Provides an interface for the creation (provide) and use (require) of plugins
+// Description: Provides an interface for the creation (provide) and use (exec) of plugins
 // ====================
 Venom.prototype.provide = util.safeFunction(function (pluginName, plugin, opt_override) {
 	var self = this;
@@ -221,12 +221,12 @@ Venom.prototype.provide = util.safeFunction(function (pluginName, plugin, opt_ov
 	}
 });
 
-Venom.prototype.require = util.safeFunction(function (pluginName, opt_config) {
+Venom.prototype.exec = util.safeFunction(function (pluginName, opt_config) {
 	var self = this;
 	if (!pluginName)
-		throw self.util.errorBuilder('venom:require', '"pluginName" was not supplied');
+		throw self.util.errorBuilder('venom:exec', '"pluginName" was not supplied');
 	if (typeof pluginName !== 'string')
-		throw self.util.errorBuilder('venom:require', '"pluginName" is not a string');
+		throw self.util.errorBuilder('venom:exec', '"pluginName" is not a string');
 
 	if (typeof self.plugins[pluginName] === 'function') {
 		self.plugins[pluginName].call(self, self.util, opt_config);
