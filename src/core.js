@@ -12,15 +12,15 @@ var ga = window[window.GoogleAnalyticsObject || 'ga'];
 
 function Venom(tracker, opt_config) {
 	var self = this;
-	if (typeof opt_config !== 'object')
-		opt_config = {};
 	self.plugins = {};
 	self.tempPlugins = {};
 	self.events = {};
 	self.util = util;
-	// self.pluginSampleRate = opt_config.pluginSampleRate || false;
-	// self.defaultBehavior = opt_config.defaultBehavior || false;
-	// self.debug = opt_config.debug || false;
+	self.tracker = tracker;
+
+	if (typeof opt_config !== 'object')
+		opt_config = {};
+	
 	if (opt_config.errorHandler === 'function') {
 		self.errorHandler = opt_config.errorHandler;
 	} else {
@@ -31,6 +31,11 @@ function Venom(tracker, opt_config) {
 		};
 	}
 	self.util.errorHandler = self.errorHandler;
+
+	// TODO - other options
+	// self.pluginSampleRate = opt_config.pluginSampleRate || false;
+	// self.defaultBehavior = opt_config.defaultBehavior || false;
+	// self.debug = opt_config.debug || false;
 }
 
 // ====================
