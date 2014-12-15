@@ -1,7 +1,5 @@
-#Venom
-####by dp6
-
-<img src="http://www.dp6.com.br/wp-content/uploads/2014/05/logo11.jpg">
+<img src="http://www.officialpsds.com/images/thumbs/Venom-Logo-psd69462.png">
+#Venom     *by [dp6](http://www.dp6.com.br/)*
 
 ## Syntax Indentation
 Use [JsFormat](https://github.com/jdc0589/JsFormat) with the following settings
@@ -17,7 +15,6 @@ Use [JsFormat](https://github.com/jdc0589/JsFormat) with the following settings
 ```
 
 ## Plugins
-
 - gaHitHook.js
 - copyCookie.js
 - timeOnPage.js
