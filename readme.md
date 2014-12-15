@@ -19,3 +19,9 @@ Use [JsFormat](https://github.com/jdc0589/JsFormat) with the following settings
 - timeOnPage.js
 - trackForm.js
 - trackYoutube.js
+- mirrorTracker.js
+
+### Todo
+- Amostragem: Opcionalmente limitar a execução dos plugins a uma porcentagem dos usuários
+- Modo Debug: Ativar logs em pontos cruciais de execução para facilitar o entendimento da *Venom*
+- Otimização: Externalizar as funções mais usadas do util para que sejam otimizadas pelo minificador

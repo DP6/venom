@@ -32,10 +32,6 @@ function Venom(tracker, opt_config) {
 
 	if (self.config.mirrorTracker)
 		ga('venom:exec', 'mirrorTracker');
-	// TODO - other options
-	// self.pluginSampleRate = opt_config.pluginSampleRate || false;
-	// self.defaultBehavior = opt_config.defaultBehavior || false;
-	// self.debug = opt_config.debug || false;
 }
 
 // ====================
