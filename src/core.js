@@ -88,12 +88,12 @@ util.forEach = function (obj, callback) {
 
 	if (obj.length) {
 		for (i = 0, length = obj.length; i < length; i++) {
-			self.safeFunction(callback).call(self, obj[i], i);
+			callback.call(self, obj[i], i);
 		}
 	} else {
 		for (key in obj) {
 			if (obj.hasOwnProperty(key)) {
-				self.safeFunction(callback).call(self, obj[key], key);
+				callback.call(self, obj[key], key);
 			}
 		}
 	}
