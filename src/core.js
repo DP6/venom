@@ -17,23 +17,18 @@ function Venom(tracker, opt_config) {
 	self.events = {};
 	self.util = util;
 	self.tracker = tracker;
+	self.config = typeof opt_config === 'object' ? opt_config : {};
 
-	if (typeof opt_config !== 'object')
-		opt_config = {};
-
-	if (opt_config.mirrorTracker)
-		self.mirrorTracker = opt_config.mirrorTracker;
-	
-	if (opt_config.errorHandler === 'function') {
-		self.errorHandler = opt_config.errorHandler;
-	} else {
-		self.errorHandler = function (error) {
+	if (self.config.errorHandler !== 'function') {
+		self.config.errorHandler = function (error) {
 			if (window.console && typeof console.error === 'function')
 				console.error(error.name + '\n' + error.message);
 			ga('send', 'event', 'Venom Exceptions', error.name, error.message);
 		};
 	}
-	self.util.errorHandler = self.errorHandler;
+
+	self.errorHandler = self.config.errorHandler;
+	self.util.errorHandler = self.config.errorHandler;
 
 	// TODO - other options
 	// self.pluginSampleRate = opt_config.pluginSampleRate || false;
@@ -182,12 +177,13 @@ util.domReady = function (callback) {
 };
 
 util.safeFunction = function (fn) {
+	var self = this;
 	return function () {
 		try {
 			fn.apply(this, arguments);
 		} catch (e) {
-			if (window.venomErrorHandler)
-				window.venomErrorHandler(e);
+			if (self.errorHandler)
+				self.errorHandler(e);
 		}
 	};
 };
