@@ -140,23 +140,21 @@ util.addListener = function (obj, evt, ofnc) {
 };
 
 util.getParamURL = function () {
-	// this fn return params from URL
-	var query_string = {};
-	var query = window.location.search.substring(1);
-	var vars = query.split("&");
-	for (var i = 0; i < vars.length; i++) {
-		var pair = vars[i].split("=");
-		if (typeof query_string[pair[0]] === "undefined") {
-			query_string[pair[0]] = pair[1];
-		} else if (typeof query_string[pair[0]] === "string") {
-			var arr = [query_string[pair[0]], pair[1]];
-			query_string[pair[0]] = arr;
-		} else {
-			query_string[pair[0]].push(pair[1]);
-		}
+	var obj = {};
+	var param;
+	var i;
+
+	if (url.charAt(0) === '?') {
+		url = url.slice(1);
 	}
 
-	return query_string;
+	url = url.split('&');
+	for (i = 0; i < url.length; i++) {
+		param = url[i].split('=');
+		obj[param.shift()] = param.join('=');
+	}
+
+	return obj;
 };
 
 util.domReady = function (callback) {
