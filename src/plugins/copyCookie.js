@@ -34,6 +34,5 @@
 		return ret;
 	}
 
-	if (ga)
-		window[gaName]('venom:provide', 'copyCookie', copyCookie);
+	window[gaName]('venom:provide', 'copyCookie', copyCookie);
 }(window, window.GoogleAnalyticsObject || 'ga'));

@@ -67,6 +67,5 @@
 		});
 	}
 
-	if (ga)
-		window[gaName]('venom:provide', 'trackForm', trackForm);
+	window[gaName]('venom:provide', 'trackForm', trackForm);
 }(window, window.GoogleAnalyticsObject || 'ga'));

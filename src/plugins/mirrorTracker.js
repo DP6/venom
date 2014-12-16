@@ -29,6 +29,5 @@
 		});
 	}
 
-	if (ga)
-		window[gaName]('venom:provide', 'mirrorTracker', mirrorTracker);
+	window[gaName]('venom:provide', 'mirrorTracker', mirrorTracker);
 }(window, window.GoogleAnalyticsObject || 'ga'));

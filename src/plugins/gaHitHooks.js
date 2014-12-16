@@ -34,6 +34,5 @@
 		});
 	}
 
-	if (ga)
-		window[gaName]('venom:provide', 'gaHitHook', gaHitHook);
+	window[gaName]('venom:provide', 'gaHitHook', gaHitHook);
 }(window, window.GoogleAnalyticsObject || 'ga'));

@@ -37,6 +37,5 @@
 		return timeBucket[i + 1] ? timeBucket[i] + '-' + timeBucket[i + 1] : timeBucket[i - 1] + '+';
 	}
 
-	if (ga)
-		window[gaName]('venom:provide', 'timeOnPage', timeOnPage);
+	window[gaName]('venom:provide', 'timeOnPage', timeOnPage);
 }(window, window.GoogleAnalyticsObject || 'ga'));
