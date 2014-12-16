@@ -140,7 +140,7 @@
 		}
 	};
 
-	util.getParamURL = function () {
+	util.getParamURL = function (url) {
 		var obj = {};
 		var param;
 		var i;
