@@ -1,6 +1,4 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function trackForm(util, opt_config) {
 		opt_config = opt_config || {};
 
@@ -71,4 +69,4 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'trackForm', trackForm);
-}(window));
+}(window, window.GoogleAnalyticsObject || 'ga'));

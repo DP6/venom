@@ -1,6 +1,4 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function gaHitHook(util, opt_config) {
 		window[gaName](function (tracker) {
 			var task = tracker.get('sendHitTask');
@@ -38,4 +36,4 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'gaHitHook', gaHitHook);
-}(window));
+}(window, window.GoogleAnalyticsObject || 'ga'));

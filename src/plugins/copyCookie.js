@@ -1,6 +1,4 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function copyCookie(util, config) {
 		if (!config || !config.domainList)
 			throw util.errorBuilder('plugin:copyCookie', '"domainList" was not supplied');
@@ -38,4 +36,4 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'copyCookie', copyCookie);
-}(window));
+}(window, window.GoogleAnalyticsObject || 'ga'));

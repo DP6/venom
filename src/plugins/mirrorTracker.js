@@ -1,10 +1,8 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function mirrorTracker(util) {
 		var self = this;
 		var name = self.config.mirrorTracker;
-		
+
 		if (typeof self.config.mirrorTracker === true)
 			name = self.tracker.get('name');
 
@@ -33,4 +31,4 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'mirrorTracker', mirrorTracker);
-}(window));
+}(window, window.GoogleAnalyticsObject || 'ga'));

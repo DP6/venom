@@ -1,6 +1,4 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function timeOnPage(util, opt_config) {
 		opt_config = opt_config || {};
 
@@ -41,4 +39,4 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'timeOnPage', timeOnPage);
-}(window));
+}(window, window.GoogleAnalyticsObject || 'ga'));
