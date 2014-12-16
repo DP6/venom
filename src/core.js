@@ -350,4 +350,4 @@
 	}
 
 	window[gaName]('provide', 'venom', Venom);
-}(window, window.GoogleAnalyticsObject || 'ga'));
+}(window, window['GoogleAnalyticsObject'] || 'ga'));
