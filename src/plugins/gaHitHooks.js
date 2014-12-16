@@ -20,7 +20,7 @@
 						page: data.get('page') || document.location.pathname
 					});
 				} else if (hitType === 'timing') {
-					window[gaName]('venom:trigger', 'gaPageview', {
+					window[gaName]('venom:trigger', 'gaTiming', {
 						timingCategory: data.get('timingCategory'),
 						timingVar: data.get('timingVar'),
 						timingValue: data.get('timingValue'),
