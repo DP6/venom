@@ -38,7 +38,7 @@
 	// ====================
 	var util = {};
 
-	function errorBuilder (errorName, errorMessage) {
+	function errorBuilder(errorName, errorMessage) {
 		return {
 			name: errorName,
 			message: errorMessage
@@ -286,24 +286,27 @@
 			throw errorBuilder('venom:trigger', '"eventName" is not a string');
 
 		if (eventName.indexOf('.') > 0) {
-			self.util.forEach(self.events[eventName], function (listener, key) {
-				try {
-					listener.call(self, self.util, opt_data);
-				} catch (e) {
-					throw self.errorBuilder('venom:util.triggerScoped', '"callback[' + key + ']": ' + e);
-				}
-			});
+			if (self.events[eventName])
+				self.util.forEach(self.events[eventName], function (listener, key) {
+					try {
+						listener.call(self, self.util, opt_data);
+					} catch (e) {
+						throw self.errorBuilder('venom:util.triggerScoped', '"callback[' + key + ']": ' + e);
+					}
+				});
 		} else {
 			self.util.forEach(self.events, function (listeners, evName) {
-				var unescopedName = evName.indexOf('.') >= 0 ? evName.split('.').reverse()[0] : evName;
-				if (unescopedName === eventName && listeners) {
-					self.util.forEach(listeners, function (listener, key) {
-						try {
-							listener.call(self, self.util, opt_data);
-						} catch (e) {
-							throw errorBuilder('venom:util.triggerUnescoped', '"callback[' + key + ']": ' + e);
-						}
-					});
+				if (listeners) {
+					var unescopedName = evName.indexOf('.') >= 0 ? evName.split('.').reverse()[0] : evName;
+					if (unescopedName === eventName) {
+						self.util.forEach(listeners, function (listener, key) {
+							try {
+								listener.call(self, self.util, opt_data);
+							} catch (e) {
+								throw errorBuilder('venom:util.triggerUnescoped', '"callback[' + key + ']": ' + e);
+							}
+						});
+					}
 				}
 			});
 		}
