@@ -8,7 +8,7 @@
 // Name: Constructor
 // Description: Initiates the base for the plugin
 // ====================
-var ga = window[window.GoogleAnalyticsObject || 'ga'];
+var gaName = window.GoogleAnalyticsObject || 'ga';
 
 function Venom(tracker, opt_config) {
 	var self = this;
@@ -23,7 +23,7 @@ function Venom(tracker, opt_config) {
 		self.config.errorHandler = function (error) {
 			if (window.console && typeof console.error === 'function')
 				console.error(error.name + '\n' + error.message);
-			ga('send', 'event', 'Venom Exceptions', error.name, error.message);
+			window[gaName]('send', 'event', 'Venom Exceptions', error.name, error.message);
 		};
 	}
 
@@ -31,7 +31,7 @@ function Venom(tracker, opt_config) {
 	self.util.errorHandler = self.config.errorHandler;
 
 	if (self.config.mirrorTracker)
-		ga('venom:exec', 'mirrorTracker');
+		window[gaName]('venom:exec', 'mirrorTracker');
 }
 
 // ====================
@@ -339,4 +339,4 @@ if (!ga) {
 }
 
 
-ga('provide', 'venom', Venom);
+window[gaName]('provide', 'venom', Venom);

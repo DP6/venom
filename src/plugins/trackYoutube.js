@@ -1,5 +1,5 @@
 (function (window) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
+	var gaName = window.GoogleAnalyticsObject || 'ga';
 
 	function trackYoutube(util, opt_config) {
 		opt_config = opt_config || {};
@@ -35,7 +35,7 @@
 			if (p >= _ytPoolMaps[hash].timeTriggers[0]) {
 				var action = _ytPoolMaps[hash].timeTriggers.shift();
 				// Event
-				ga('send', 'event', _ytOpts.category, action + '%', target.getVideoUrl());
+				window[gaName]('send', 'event', _ytOpts.category, action + '%', target.getVideoUrl());
 			}
 			_ytPoolMaps[hash].timer = setTimeout(_ytPool, 1000, target, hash);
 		}
@@ -86,7 +86,7 @@
 				break;
 			}
 			if (action) {
-				ga('send', 'event', _ytOpts.category, action, event.target.getVideoUrl());
+				window[gaName]('send', 'event', _ytOpts.category, action, event.target.getVideoUrl());
 			}
 		}
 
@@ -96,7 +96,7 @@
 		 * @param {Object} event the event passed by the YT api.
 		 */
 		function _ytError(event) {
-			ga('send', 'event', _ytOpts.category, 'error (' + event.data + ')', event.target.getVideoUrl());
+			window[gaName]('send', 'event', _ytOpts.category, 'error (' + event.data + ')', event.target.getVideoUrl());
 		}
 
 		/**
@@ -146,7 +146,7 @@
 				try {
 					_ytMigrateObjectEmbed();
 				} catch (e) {
-					ga('send', 'exception', {
+					window[gaName]('send', 'exception', {
 						'exDescription': 'Error on youtube.js:_ytMigrateObjectEmbed',
 						'exFatal': false
 					});
@@ -228,5 +228,5 @@
 	}
 
 	if (ga)
-		ga('venom:provide', 'trackYoutube', trackYoutube);
+		window[gaName]('venom:provide', 'trackYoutube', trackYoutube);
 }(window));

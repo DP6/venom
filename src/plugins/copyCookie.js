@@ -1,5 +1,5 @@
 (function (window) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
+	var gaName = window.GoogleAnalyticsObject || 'ga';
 
 	function copyCookie(util, config) {
 		if (!config || !config.domainList)
@@ -7,10 +7,10 @@
 		if (util.typeOf(config.domainList) !== 'Array')
 			throw util.errorBuilder('plugin:copyCookie', '"domainList" is not an array');
 
-		ga('require', 'linker');
+		window[gaName]('require', 'linker');
 		if (config.useAutoLinker) {
 			// Load plugin to listener all links on the page and automatically fire cookie GA.
-			ga('linker:autoLink', config.domainList);
+			window[gaName]('linker:autoLink', config.domainList);
 		} else {
 			util.forEach(document.getElementsByTagName('a'), function (el) {
 				util.addListener(el, 'mousedown', function (event) {
@@ -19,7 +19,7 @@
 						var target = event.target || event.srcElement;
 
 						if (target && target.href) {
-							ga('linker:decorate', target);
+							window[gaName]('linker:decorate', target);
 						}
 					}
 				});
@@ -37,5 +37,5 @@
 	}
 
 	if (ga)
-		ga('venom:provide', 'copyCookie', copyCookie);
+		window[gaName]('venom:provide', 'copyCookie', copyCookie);
 }(window));
