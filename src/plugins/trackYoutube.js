@@ -1,6 +1,4 @@
-(function (window) {
-	var gaName = window.GoogleAnalyticsObject || 'ga';
-
+(function (window, gaName) {
 	function trackYoutube(util, opt_config) {
 		opt_config = opt_config || {};
 		if (opt_config.percentages && util.typeOf(opt_config.percentages) !== 'Array')
@@ -228,4 +226,5 @@
 
 	if (ga)
 		window[gaName]('venom:provide', 'trackYoutube', trackYoutube);
-}(window));
+
+}(window, window.GoogleAnalyticsObject || 'ga'));

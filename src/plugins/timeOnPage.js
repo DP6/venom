@@ -1,6 +1,4 @@
-(function (window) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
-
+(function (window, gaName) {
 	function timeOnPage(util, opt_config) {
 		opt_config = opt_config || {};
 
@@ -21,7 +19,7 @@
 		util.addListener(window, 'unload', function () {
 			var ms = start ? (new Date().getTime() - start) : performance.now();
 			var range = getRange(ms / 1000, opt_config.timeBucket);
-			ga('send', {
+			window[gaName]('send', {
 				hitType: 'event',
 				eventCategory: opt_config.category,
 				eventAction: range,
@@ -40,5 +38,5 @@
 	}
 
 	if (ga)
-		ga('venom:provide', 'timeOnPage', timeOnPage);
-}(window));
+		window[gaName]('venom:provide', 'timeOnPage', timeOnPage);
+}(window, window.GoogleAnalyticsObject || 'ga'));

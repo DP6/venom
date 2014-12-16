@@ -1,6 +1,4 @@
-(function (window) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
-
+(function (window, gaName) {
 	function trackForm(util, opt_config) {
 		opt_config = opt_config || {};
 
@@ -16,7 +14,7 @@
 			opt_config.handler = function (info) {
 				var action = 'form (' + info.formName + ')';
 				var label = info.elementName + ' (' + info.event.type + ')';
-				ga('send', 'event', opt_config.category, action, label);
+				window[gaName]('send', 'event', opt_config.category, action, label);
 			};
 		opt_config.handler = util.safeFunction(opt_config.handler);
 
@@ -70,5 +68,5 @@
 	}
 
 	if (ga)
-		ga('venom:provide', 'trackForm', trackForm);
-}(window));
+		window[gaName]('venom:provide', 'trackForm', trackForm);
+}(window, window.GoogleAnalyticsObject || 'ga'));

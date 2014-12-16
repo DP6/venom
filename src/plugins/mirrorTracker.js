@@ -1,14 +1,12 @@
-(function (window) {
-	var ga = window[window.GoogleAnalyticsObject || 'ga'];
-
+(function (window, gaName) {
 	function mirrorTracker(util) {
 		var self = this;
 		var name = self.config.mirrorTracker;
-		
+
 		if (typeof self.config.mirrorTracker === true)
 			name = self.tracker.get('name');
 
-		ga('venom:on', 'gaPageview', function (info) {
+		window[gaName]('venom:on', 'gaPageview', function (info) {
 			util.forEach(ga.getAll(), function (tracker) {
 				if (name !== tracker.get('name'))
 					tracker.send('pageview', {
@@ -18,7 +16,7 @@
 			});
 		});
 
-		ga('venom:on', 'gaEvent', function (info) {
+		window[gaName]('venom:on', 'gaEvent', function (info) {
 			util.forEach(ga.getAll(), function (tracker) {
 				if (name !== tracker.get('name'))
 					tracker.send('event', {
@@ -32,5 +30,5 @@
 	}
 
 	if (ga)
-		ga('venom:provide', 'mirrorTracker', mirrorTracker);
-}(window));
+		window[gaName]('venom:provide', 'mirrorTracker', mirrorTracker);
+}(window, window.GoogleAnalyticsObject || 'ga'));
