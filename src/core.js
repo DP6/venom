@@ -101,7 +101,6 @@
 		return Object.prototype.toString.call(object).slice(8, -1);
 	};
 
-	// Event listener with polify
 	util.addListener = function (obj, evt, ofnc) {
 		var fnc = function (event) {
 			if (!event || !event.target) {
@@ -110,21 +109,15 @@
 			}
 			return ofnc.call(obj, event);
 		};
-		// W3C model
+
 		if (obj.addEventListener) {
-			obj.addEventListener(evt, fnc);
+			obj.addEventListener(evt, fnc, false);
 			return true;
-		}
-		// M$ft model
-		else if (obj.attachEvent) {
+		} else if (obj.attachEvent) {
 			return obj.attachEvent('on' + evt, fnc);
-		}
-		// Browser doesn't support W3C or M$ft model. Time to go old school
-		else {
+		} else {
 			evt = 'on' + evt;
 			if (typeof obj[evt] === 'function') {
-				// Object already has a util.on = function traditional
-				// Let's wrap it with our own util.inside = function another function
 				fnc = (function (f1, f2) {
 					return function () {
 						f1.apply(this, arguments);
