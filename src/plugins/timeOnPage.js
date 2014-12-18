@@ -28,8 +28,7 @@
 				hitType: 'event',
 				eventCategory: opt_config.category,
 				eventAction: range,
-				eventLabel: range,
-				useBeacon: true
+				eventLabel: range
 			});
 		});
 
@@ -41,8 +40,7 @@
 					hitType: 'event',
 					eventCategory: opt_config.category,
 					eventAction: range,
-					eventLabel: range,
-					useBeacon: true
+					eventLabel: range
 				});
 			}
 		});
