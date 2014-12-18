@@ -34,5 +34,5 @@
 		});
 	}
 
-	window[gaName]('venom:provide', 'gaHitHook', gaHitHook);
+	window[gaName]('venom:setPlugin', 'gaHitHook', gaHitHook);
 }(window, window.GoogleAnalyticsObject || 'ga'));

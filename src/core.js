@@ -195,15 +195,15 @@
 	Venom.prototype.provide = util.safeFunction(function (pluginName, plugin, opt_override) {
 		var self = this;
 		if (!pluginName)
-			throw errorBuilder('venom:provide', '"pluginName" was not supplied');
+			throw errorBuilder('venom:setPlugin', '"pluginName" was not supplied');
 		if (!plugin)
-			throw errorBuilder('venom:provide', '"plugin" was not supplied');
+			throw errorBuilder('venom:setPlugin', '"plugin" was not supplied');
 		if (typeof pluginName !== 'string')
-			throw errorBuilder('venom:provide', '"pluginName" is not a string');
+			throw errorBuilder('venom:setPlugin', '"pluginName" is not a string');
 		if (typeof plugin !== 'function')
-			throw errorBuilder('venom:provide', '"plugin" is not a function');
+			throw errorBuilder('venom:setPlugin', '"plugin" is not a function');
 		if (typeof self.plugins[pluginName] !== 'undefined' && opt_override !== true)
-			throw errorBuilder('venom:provide', 'Plugin "' + pluginName + '" is already defined');
+			throw errorBuilder('venom:setPlugin', 'Plugin "' + pluginName + '" is already defined');
 
 		self.plugins[pluginName] = self.safeFunction(plugin);
 
@@ -212,7 +212,7 @@
 				try {
 					plugin.call(self, self.util, config);
 				} catch (e) {
-					throw errorBuilder('venom:provide', '"plugin[' + pluginName + ']": ' + e);
+					throw errorBuilder('venom:setPlugin', '"plugin[' + pluginName + ']": ' + e);
 				}
 			});
 			self.tempPlugins[pluginName] = [];

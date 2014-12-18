@@ -67,5 +67,5 @@
 		});
 	}
 
-	window[gaName]('venom:provide', 'trackForm', trackForm);
+	window[gaName]('venom:setPlugin', 'trackForm', trackForm);
 }(window, window.GoogleAnalyticsObject || 'ga'));

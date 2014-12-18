@@ -29,5 +29,5 @@
 		});
 	}
 
-	window[gaName]('venom:provide', 'mirrorTracker', mirrorTracker);
+	window[gaName]('venom:setPlugin', 'mirrorTracker', mirrorTracker);
 }(window, window.GoogleAnalyticsObject || 'ga'));

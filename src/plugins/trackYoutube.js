@@ -224,5 +224,5 @@
 		_gaTrackYoutube(opt_config);
 	}
 
-	window[gaName]('venom:provide', 'trackYoutube', trackYoutube);
+	window[gaName]('venom:setPlugin', 'trackYoutube', trackYoutube);
 }(window, window.GoogleAnalyticsObject || 'ga'));
