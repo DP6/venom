@@ -159,11 +159,7 @@
 		function cb() {
 			if (cb.done) return;
 			cb.done = true;
-			try {
-				callback.apply(null, arguments);
-			} catch (e) {
-				throw errorBuilder('util:domReady', '"callback": ' + e);
-			}
+			callback.apply(null, arguments);
 		}
 
 		if (/^(interactive|complete)/.test(document.readyState)) return cb();
