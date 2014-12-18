@@ -190,9 +190,9 @@
 
 	// ====================
 	// Name: Plugin Management System
-	// Description: Provides an interface for the creation (provide) and use (exec) of plugins
+	// Description: Provides an interface for the creation (setPlugin) and use (exec) of plugins
 	// ====================
-	Venom.prototype.provide = util.safeFunction(function (pluginName, plugin, opt_override) {
+	Venom.prototype.setPlugin = util.safeFunction(function (pluginName, plugin, opt_override) {
 		var self = this;
 		if (!pluginName)
 			throw errorBuilder('venom:setPlugin', '"pluginName" was not supplied');
@@ -202,7 +202,7 @@
 			throw errorBuilder('venom:setPlugin', '"pluginName" is not a string');
 		if (typeof plugin !== 'function')
 			throw errorBuilder('venom:setPlugin', '"plugin" is not a function');
-		if (typeof self.plugins[pluginName] !== 'undefined' && opt_override !== true)
+		if (typeof self.plugins[pluginName] === 'function' && opt_override !== true)
 			throw errorBuilder('venom:setPlugin', 'Plugin "' + pluginName + '" is already defined');
 
 		self.plugins[pluginName] = self.safeFunction(plugin);
