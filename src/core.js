@@ -27,9 +27,6 @@
 
 		self.errorHandler = self.config.errorHandler;
 		self.util.errorHandler = self.config.errorHandler;
-
-		if (self.config.mirrorTracker)
-			window[gaName]('venom:exec', 'mirrorTracker');
 	}
 
 	// ====================

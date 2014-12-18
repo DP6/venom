@@ -3,10 +3,10 @@
 		var self = this;
 		var name = self.config.mirrorTracker;
 
-		if (typeof self.config.mirrorTracker === true)
+		if (name === true)
 			name = self.tracker.get('name');
 
-		window[gaName]('venom:on', 'gaPageview', function (info) {
+		window[gaName]('venom:on', 'gaPageview', function (util, info) {
 			util.forEach(ga.getAll(), function (tracker) {
 				if (name !== tracker.get('name'))
 					tracker.send('pageview', {
@@ -16,7 +16,7 @@
 			});
 		});
 
-		window[gaName]('venom:on', 'gaEvent', function (info) {
+		window[gaName]('venom:on', 'gaEvent', function (util, info) {
 			util.forEach(ga.getAll(), function (tracker) {
 				if (name !== tracker.get('name'))
 					tracker.send('event', {
