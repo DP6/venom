@@ -49,18 +49,18 @@
 
 		util.domReady(function () {
 			util.forEach(['input', 'select', 'textarea', 'hidden'], function (tagName) {
-				var elements = document.getElementsByTagName(tagName);
-				util.forEach(elements, function (element) {
-					if (!element.venomFormTracked) {
-						element.venomFormTracked = true;
-						util.addListener(element, 'change', trackField);
+				var nodes = document.getElementsByTagName(tagName);
+				util.forEach(nodes, function (node) {
+					if (!node.venomFormTracked) {
+						node.venomFormTracked = true;
+						util.addListener(node, 'change', trackField);
 					}
 				});
 			});
 
 			util.forEach(document.getElementsByTagName('form'), function (form) {
-				if (!element.venomFormTracked) {
-					element.venomFormTracked = true;
+				if (!form.venomFormTracked) {
+					form.venomFormTracked = true;
 					util.addListener(form, 'submit', trackField);
 				}
 			});
