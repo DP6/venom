@@ -45,7 +45,10 @@
 	util.errorBuilder = errorBuilder;
 
 	util.bind = function (fn, context) {
-		var args, proxy, tmp, guid = 1;
+		var guid = 1;
+		var proxy;
+		var args;
+		var tmp;
 
 		if (typeof context === "string") {
 			tmp = fn[context];
@@ -155,7 +158,7 @@
 			callback.apply(null, arguments);
 		}
 
-		if (/^(interactive|complete)/.test(document.readyState)) return cb();
+		if (document.readyState === 'interactive' || document.readyState === 'complete') return cb();
 		util.addListener(document, 'DOMContentLoaded', cb);
 		util.addListener(window, 'load', cb);
 	};
