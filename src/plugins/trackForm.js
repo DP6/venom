@@ -1,6 +1,6 @@
 (function (window, gaName) {
 	function trackForm(util, opt_config) {
-		opt_config = opt_config || {};
+		var opt_config = opt_config || {};
 
 		if (opt_config.handler && typeof opt_config.handler !== 'function')
 			throw util.errorBuilder('venom:plugin[trackForm]', '"handler" is not a function');
