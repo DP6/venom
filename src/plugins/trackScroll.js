@@ -9,7 +9,7 @@
         if (!opt_config.category)
             opt_config.category = 'Max Scroll';
 
-		var body = window.body || window.getElementsByTagName('body')[0],
+		var body = window.body || document.getElementsByTagName('body')[0],
 			documentElement = document.documentElement,
 			maxScroll = 0, timeout = null;
 
@@ -43,13 +43,14 @@
 		function updateScroll(now) {
 
 			if (now === true) {
-				_max_scroll = Math.max(getScroll(), maxScroll);
+				maxScroll = Math.max(getScroll(), maxScroll);
 				return;
 			}
             clearTimeout(timeout);
 			timeout = setTimeout(function () {
-				_max_scroll = Math.max(getScroll(), maxScroll);
+				maxScroll = Math.max(getScroll(), maxScroll);
 			}, 400);
+			
 		}
 
 		function sendScroll() {
@@ -59,15 +60,15 @@
 			var bucket = (maxScroll > 10 ? 1 : 0) * (
 				Math.floor((maxScroll - 1) / 10) * 10 + 1
 			);
-			bucket = String(bucket) + '-' +
-				String(Math.ceil(maxScroll / 10) * 10);
+			bucket = String(bucket) + '-' +	String(Math.ceil(maxScroll / 10) * 10);
 
-			ga('send', 'event', opt_config.category, url, bucket, Math.floor(maxScroll));
+			ga('send', 'event', opt_config.category, bucket, maxScroll, maxScroll));
 		}
 
 		// Tracks the max Scroll on the page.
-		this._addEventListener(window, 'scroll', updateScroll);
-		this._addEventListener(window, 'beforeunload', sendScroll);
+		util.addListener(window, 'scroll', updateScroll);
+		util.addListener(window, 'beforeunload', sendScroll);
+		util.addListener(window, 'unload', sendScroll);
 	}
 
 	window[gaName]('venom:setPlugin', 'trackScroll', trackScroll);

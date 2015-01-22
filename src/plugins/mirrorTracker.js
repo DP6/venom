@@ -3,6 +3,8 @@
 		var self = this;
 		var name = self.config.mirrorTracker;
 
+		if (!name) return;
+		
 		if (name === true)
 			name = self.tracker.get('name');
 
