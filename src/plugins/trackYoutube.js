@@ -213,7 +213,7 @@
 
 			opt_config.force = opt_config.force || false;
 			opt_config.category = opt_config.category || 'YouTube Video';
-			opt_config.percentages = opt_config.percentages || [];
+			opt_config.percentages = opt_config.percentages || [5,25,50,90];
 
 			_ytOpts = opt_config;
 			util.domReady(function () {
