@@ -14,47 +14,47 @@
 		/**
 		 * Array of percentage to fire events.
 		 */
-		var _ytTimeTriggers = [];
-		var _ytOpts;
+		var timeTriggers = [];
+		var opts;
 
 
 		/**
 		 * Used to map each vid to a set of timeTriggers and it's pool timer
 		 */
-		var _ytPoolMaps = {};
+		var poolMaps = {};
 
-		function _ytPool(target, hash) {
-			if (_ytPoolMaps[hash] === undefined ||
-				_ytPoolMaps[hash].timeTriggers.length <= 0) {
+		function pool(target, hash) {
+			if (poolMaps[hash] === undefined ||
+				poolMaps[hash].timeTriggers.length <= 0) {
 				return false;
 			}
 			var p = target.getCurrentTime() / target.getDuration() * 100;
-			if (p >= _ytPoolMaps[hash].timeTriggers[0]) {
-				var action = _ytPoolMaps[hash].timeTriggers.shift();
+			if (p >= poolMaps[hash].timeTriggers[0]) {
+				var action = poolMaps[hash].timeTriggers.shift();
 				// Event
-				window[gaName]('send', 'event', _ytOpts.category, action + '%', target.getVideoUrl());
+				window[gaName]('send', 'event', opts.category, action + '%', target.getVideoUrl());
 			}
-			_ytPoolMaps[hash].timer = setTimeout(_ytPool, 1000, target, hash);
+			poolMaps[hash].timer = setTimeout(pool, 1000, target, hash);
 		}
 
-		function _ytStopPool(target) {
+		function stopPool(target) {
 			var h = target.getVideoUrl();
-			if (_ytPoolMaps[h] && _ytPoolMaps[h].timer) {
-				_ytPool(target, h); // Pool one last time before clearing it.
-				clearTimeout(_ytPoolMaps[h].timer);
+			if (poolMaps[h] && poolMaps[h].timer) {
+				pool(target, h); // Pool one last time before clearing it.
+				clearTimeout(poolMaps[h].timer);
 			}
 		}
 
-		function _ytStartPool(target) {
-			if (_ytTimeTriggers && _ytTimeTriggers.length) {
+		function startPool(target) {
+			if (timeTriggers && timeTriggers.length) {
 				var h = target.getVideoUrl();
-				if (_ytPoolMaps[h]) {
-					_ytStopPool(target);
+				if (poolMaps[h]) {
+					stopPool(target);
 				} else {
-					_ytPoolMaps[h] = {};
-					_ytPoolMaps[h].timeTriggers = Array.prototype.slice.call(_ytTimeTriggers);
+					poolMaps[h] = {};
+					poolMaps[h].timeTriggers = Array.prototype.slice.call(timeTriggers);
 				}
-				_ytPoolMaps[h].timer = setTimeout(_ytPool, 1000, target, h);
+				poolMaps[h].timer = setTimeout(pool, 1000, target, h);
 			}
 		}
 
@@ -66,25 +66,19 @@
 		 *
 		 * @param {Object} event the event passed by the YT api.
 		 */
+		var states = {};
+
 		function _ytStateChange(event) {
-			var action = '';
-			switch (event.data) {
-			case 0:
-				action = 'finish';
-				_ytStopPool(event.target);
-				break;
-			case 1:
-				action = 'play';
-				_ytStartPool(event.target);
-				break;
-			case 2:
-				action = 'pause';
-				_ytStopPool(event.target);
-				break;
+			var stateHandler = states[event.data];
+			var action;
+
+			if (typeof stateHandler === 'function') {
+				action = stateHandler(event.target);
 			}
+
 			if (action) {
-				window[gaName]('venom:trigger', 'youtube_'+action);
-				window[gaName]('send', 'event', _ytOpts.category, action, event.target.getVideoUrl());
+				window[gaName]('venom:trigger', 'youtube_' + action);
+				window[gaName]('send', 'event', opts.category, action, event.target.getVideoUrl());
 			}
 		}
 
@@ -94,39 +88,7 @@
 		 * @param {Object} event the event passed by the YT api.
 		 */
 		function _ytError(event) {
-			window[gaName]('send', 'event', _ytOpts.category, 'error (' + event.data + ')', event.target.getVideoUrl());
-		}
-
-		/**
-		 * Looks for object/embed youtube videos and migrate them to the iframe method
-		 *  so it tries to track them
-		 */
-		function _ytMigrateObjectEmbed() {
-			var objs = document.getElementsByTagName('object');
-			var pars, ifr, ytid;
-			var r = /(https?:\/\/www\.youtube(-nocookie)?\.com[^\/]*).*\/v\/([^&?]+)/;
-			for (var i = 0; i < objs.length; i++) {
-				pars = objs[i].getElementsByTagName('param');
-				for (var j = 0; j < pars.length; j++) {
-					if (pars[j].name === 'movie' && pars[j].value) {
-						// Replace the object with an iframe
-						ytid = pars[j].value.match(r);
-						if (ytid && ytid[1] && ytid[3]) {
-							ifr = document.createElement('iframe');
-							ifr.src = ytid[1] + '/embed/' + ytid[3] + '?enablejsapi=1';
-							ifr.width = objs[i].width;
-							ifr.height = objs[i].height;
-							ifr.setAttribute('frameBorder', '0');
-							ifr.setAttribute('allowfullscreen', '');
-							objs[i].parentNode.insertBefore(ifr, objs[i]);
-							objs[i].parentNode.removeChild(objs[i]);
-							// Since we removed the object the Array changed
-							i--;
-						}
-						break;
-					}
-				}
-			}
+			window[gaName]('send', 'event', opts.category, 'error (' + event.data + ')', event.target.getVideoUrl());
 		}
 
 		/**
@@ -138,27 +100,17 @@
 		 * @param {(object)} opts.
 		 */
 		function _trackYoutube(opts) {
-			var force = opts.force;
-			var opt_timeTriggers = opts.percentages;
-			if (force) {
-				try {
-					_ytMigrateObjectEmbed();
-				} catch (e) {
-					window[gaName]('send', 'exception', {
-						'exDescription': 'Error on youtube.js:_ytMigrateObjectEmbed',
-						'exFatal': false
-					});
-				}
-			}
-
-			var youtube_videos = [];
 			var iframes = document.getElementsByTagName('iframe');
-			for (var i = 0; i < iframes.length; i++) {
-				if (String.prototype.indexOf.call(iframes[i].src, '//www.youtube.com/embed') > -1) {
-					if (String.prototype.indexOf.call(iframes[i].src, 'enablejsapi=1') < 0) {
+			var opt_timeTriggers = opts.percentages;
+			var youtube_videos = [];
+			var force = opts.force;
+			var firstTag, script, i;
+			for (i = 0; i < iframes.length; i++) {
+				if (iframes[i].src.indexOf('//www.youtube.com/embed') >= 0) {
+					if (iframes[i].src.indexOf('enablejsapi=1') === -1) {
 						if (force) {
 							// Reload the video enabling the api
-							if (String.prototype.indexOf.call(iframes[i].src, '?') < 0) {
+							if (iframes[i].src.indexOf('?') === -1) {
 								iframes[i].src += '?enablejsapi=1';
 							} else {
 								iframes[i].src += '&enablejsapi=1';
@@ -173,49 +125,64 @@
 			}
 			if (youtube_videos.length > 0) {
 				if (opt_timeTriggers && opt_timeTriggers.length) {
-					_ytTimeTriggers = opt_timeTriggers;
+					timeTriggers = opt_timeTriggers;
 				}
 				// this function will be called when the youtube api loads
-				window.onYouTubePlayerAPIReady = function () {
-					var p;
-					for (var i = 0; i < youtube_videos.length; i++) {
-						p = new window.YT.Player(youtube_videos[i]);
+				window.onYouTubePlayerAPIReady = function (youtube_videos, p, i) {
+					states[YT.PlayerState.ENDED] = function (target) {
+						stopPool(target);
+						return 'finish';
+					};
+					states[YT.PlayerState.PLAYING] = function (event) {
+						startPool(target);
+						return 'play';
+					};
+					states[YT.PlayerState.PAUSED] = function (event) {
+						stopPool(target);
+						return 'pause';
+					};
+					states[YT.PlayerState.BUFFERING] = function (event) {
+						return null;
+					};
+					states[YT.PlayerState.CUED] = function (event) {
+						return null;
+					};
+					for (i = 0; i < youtube_videos.length; i++) {
+						p = new YT.Player(youtube_videos[i]);
 						p.addEventListener('onStateChange', _ytStateChange);
 						p.addEventListener('onError', _ytError);
+						p = null;
 					}
 				};
-				// load the youtube player api
-				var tag = document.createElement('script');
-				//XXX use document.location.protocol
-				var protocol = 'http:';
-				if (document.location.protocol === 'https:') {
-					protocol = 'https:';
-				}
-				tag.src = protocol + '//www.youtube.com/player_api';
-				tag.type = 'text/javascript';
-				tag.async = true;
-				var firstScriptTag = document.getElementsByTagName('script')[0];
-				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+				if (window.YT) onYouTubePlayerAPIReady(youtube_videos);
+
+				var script = document.createElement('script');
+				script.src = (document.location.protocol === 'https:' ? 'https:' : 'http:') + '//www.youtube.com/iframe_api';
+				script.type = 'text/javascript';
+				script.async = true;
+				var firstScript = document.getElementsByTagName('script')[0];
+				firstScript.parentNode.insertBefore(script, firstScript);
 			}
 		}
 
-		function _gaTrackYoutube(opts) {
+		function _gaTrackYoutube(config, deprecated_percentages) {
 			// Support for legacy parameters
 			var args = Array.prototype.slice.call(arguments);
-			if (args[0] && (typeof args[0] === 'boolean' || args[0] === 'force')) {
+			if (typeof config === 'boolean' || config === 'force') {
 				opts = {
-					'force': !!args[0]
+					force: !!config,
+					percentages: deprecated_percentages && deprecated_percentages.length ? deprecated_percentages : false
 				};
-				if (args[1] && args[1].length) {
-					opts.percentages = args[1];
-				}
 			}
 
-			opt_config.force = opt_config.force || false;
-			opt_config.category = opt_config.category || 'YouTube Video';
-			opt_config.percentages = opt_config.percentages || [5,25,50,90];
+			if (!opt_config.force)
+				opt_config.force = false;
+			if (!opt_config.category)
+				opt_config.category = 'YouTube Video';
+			if (!opt_config.percentages)
+				opt_config.percentages = [5, 25, 50, 90];
 
-			_ytOpts = opt_config;
+			opts = opt_config;
 			util.domReady(function () {
 				_trackYoutube.call(self, opt_config);
 			});
