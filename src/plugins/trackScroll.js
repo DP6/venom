@@ -62,7 +62,7 @@
 			);
 			bucket = String(bucket) + '-' +	String(Math.ceil(maxScroll / 10) * 10);
 
-			ga('send', 'event', opt_config.category, bucket, maxScroll, maxScroll));
+			ga('send', 'event', opt_config.category, bucket, maxScroll, maxScroll);
 		}
 
 		// Tracks the max Scroll on the page.
