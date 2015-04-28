@@ -33,7 +33,6 @@
 		function handleVisibilityChange() {
 			if (document[hidden]) {
 				isPageHidden = true;
-				console.log(opt_config.changeTimeOnPage);
 				if(opt_config.changeTimeOnPage){
 					ga("venom:exec", "timeOnPage", {origin: 'truePageviewHidden'});
 				}
