@@ -1,8 +1,8 @@
 (function (window, gaName) {
 	// ====================
 	// Name: timeOnPage
-	// Description: It includes the tools to let the "truePageview" plugin to modify its behavior.
-	// truePageview stops the time counter when the user is not actually seeing the page.
+	// Description: It includes the tools to let the "enhancedPageview" plugin to modify its behavior.
+	// enhancedPageview stops the time counter when the user is not actually seeing the page.
 	// ====================
 	var start;
 	function timeOnPage(util, opt_config) {
@@ -39,10 +39,10 @@
 			});
 		}
 		self.venomUnloaded = false;
-		if(opt_config.origin === "truePageviewHidden"){
+		if(opt_config.origin === "enhancedPageviewHidden"){
 			handleTimeOnPage();
 		}
-		else if (opt_config.origin === "truePageviewShown"){
+		else if (opt_config.origin === "enhancedPageviewShown"){
 			start = new Date().getTime();
 			handleTimeOnPage();
 		}
