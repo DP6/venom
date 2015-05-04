@@ -1,13 +1,13 @@
 (function (window, gaName) {
 	// ====================
-	// Name: truePageview
+	// Name: enhancedPageview
 	// Description: Another way send pageviews, by not sending it when 
 	// the user opens the page, but when he actually see it. Other functions
 	// include send events about the change of the visibility of the page and 
 	// stop the time counter of the "timeOnPage" plugin when the visibility is
 	// set to "hidden".
 	// ====================
-	function truePageview(util, opt_config) {
+	function enhancedPageview(util, opt_config) {
 		var hidden, visibilityChange;
 		if (typeof document.hidden !== "undefined") {
 		  hidden = "hidden";
@@ -34,13 +34,13 @@
 			if (document[hidden]) {
 				isPageHidden = true;
 				if(opt_config.changeTimeOnPage){
-					ga("venom:exec", "timeOnPage", {origin: 'truePageviewHidden'});
+					ga("venom:exec", "timeOnPage", {origin: 'enhancedPageviewHidden'});
 				}
 				ga("send", "event", "Pageview_Status", "Hidden", location.pathname + location.search, {"nonInteraction": 1});
 			}
 			else {
 				if (opt_config.changeTimeOnPage && isPageHidden){
-					ga("venom:exec", "timeOnPage", {origin: 'truePageviewShown'});
+					ga("venom:exec", "timeOnPage", {origin: 'enhancedPageviewShown'});
 				}
 				ga("send", "event", "Pageview_Status", "Shown", location.pathname + location.search);
 				if (!hasPageviewFired) {
@@ -52,5 +52,5 @@
 		handleVisibilityChange();
 		util.addListener(document, visibilityChange, handleVisibilityChange);
 	}
-	window[gaName]('venom:setPlugin', 'truePageview', truePageview);
+	window[gaName]('venom:setPlugin', 'enhancedPageview', enhancedPageview);
 }(window, window.GoogleAnalyticsObject || 'ga'));
